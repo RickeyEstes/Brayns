@@ -125,6 +125,9 @@ RUN cksum ${BRAYNS_SRC}/.gitsubprojects \
     -DBRAYNS_CIRCUITVIEWER_ENABLED=ON \
     -DCMAKE_BUILD_TYPE=Release \       
     -DCMAKE_INSTALL_PREFIX=${DIST_PATH} \
+    -DBRAYNS_NETWORKING_ENABLED=ON \
+    -DCLONE_SUBPROJECTS=ON \
+
     -DBUILD_PYTHON_BINDINGS=OFF \      
     -DEXTLIB_FROM_SUBMODULES=ON \      
   || exit 0;                           
