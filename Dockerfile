@@ -111,52 +111,51 @@ ADD . ${BRAYNS_SRC}
 # Install Brayns
 # https://github.com/BlueBrain/Brayns
 RUN cksum ${BRAYNS_SRC}/.gitsubprojects \
- && cd ${BRAYNS_SRC} \
+ && cd ${BRAYNS_SRC} \                 
  && git submodule update --init --recursive \
- && mkdir -p build \
- && cd build \
+ && mkdir -p build \                   
+ && cd build \                         
  && CMAKE_PREFIX_PATH=${DIST_PATH}:${DIST_PATH}/lib/cmake/libwebsockets \
-    cmake .. -GNinja \
-    -DBRAYNS_ASSIMP_ENABLED=ON \
-    -DBRAYNS_OSPRAY_ENABLED=ON \
+    cmake ..  \                        
+    -DBRAYNS_ASSIMP_ENABLED=ON \       
+    -DBRAYNS_OSPRAY_ENABLED=ON \       
     -DBRAYNS_CIRCUITEXPLORER_ENABLED=ON \
-    -DBRAYNS_CIRCUITINFO_ENABLED=ON \
-    -DBRAYNS_DTI_ENABLED=OFF \
+    -DBRAYNS_CIRCUITINFO_ENABLED=ON \  
+    -DBRAYNS_DTI_ENABLED=OFF \         
     -DBRAYNS_CIRCUITVIEWER_ENABLED=ON \
-    -DBRAYNS_NETWORKING_ENABLED=ON \
-    -DCLONE_SUBPROJECTS=ON \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=Release \       
     -DCMAKE_INSTALL_PREFIX=${DIST_PATH} \
-    -DBUILD_PYTHON_BINDINGS=OFF \
-    -DEXTLIB_FROM_SUBMODULES=ON \
- && ninja mvd-tool perceptualdiff Brayns-install Brayns-tests \
+    -DBUILD_PYTHON_BINDINGS=OFF \      
+    -DEXTLIB_FROM_SUBMODULES=ON \      
+  || exit 0;                           
+RUN  cd ${BRAYNS_SRC}/build; make -j 10 install  \
  && rm -rf ${DIST_PATH}/include ${DIST_PATH}/cmake ${DIST_PATH}/share
-
+                                       
 # Final image, containing only Brayns and libraries required to run it
-FROM debian:buster-slim
-ARG DIST_PATH=/app/dist
-
-RUN apt-get update \
+FROM debian:buster-slim                
+ARG DIST_PATH=/app/dist                
+                                       
+RUN apt-get update \                   
  && apt-get -y --no-install-recommends install \
-    libarchive13 \
-    libassimp4 \
-    libboost-filesystem1.67.0 \
-    libboost-program-options1.67.0 \
-    libboost-regex1.67.0 \
-    libboost-serialization1.67.0 \
-    libboost-system1.67.0 \
-    libboost-iostreams1.67.0 \
-    libfreeimage3 \
-    libgomp1 \
-    libhdf5-103 \
-    libturbojpeg0 \
-    libuv1 \
- && apt-get clean \
+    libarchive13 \                     
+    libassimp4 \                       
+    libboost-filesystem1.67.0 \        
+    libboost-program-options1.67.0 \   
+    libboost-regex1.67.0 \             
+    libboost-serialization1.67.0 \     
+    libboost-system1.67.0 \            
+    libboost-iostreams1.67.0 \         
+    libfreeimage3 \                    
+    libgomp1 \                         
+    libhdf5-103 \                      
+    libturbojpeg0 \                    
+    libuv1 \                           
+ && apt-get clean \                    
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# The COPY command below will:
+                                       
+# The COPY command below will:         
 # 1. create a container based on the `builder` image (but do not start it)
-#    Equivalent to the `docker create` command
+#    Equivalent to the `docker create` #command
 # 2. create a new image layer containing the
 #    /app/dist directory of this new container
 #    Equivalent to the `docker copy` command.
